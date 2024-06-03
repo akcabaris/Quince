@@ -172,7 +172,7 @@ const PostSearchPage = () => {
                 </>
               ) : (
                 <>
-                  <>{isSearched && !loading && totalPost >0 ? (
+                  <>{isSearched && !loading && totalPost == 0 ? (
                     <div className="flex flex-col items-center justify-center space-y-4 mt-4">
                       <ArrowUpwardIcon />
                       <p className="text-lg lg:text-2xl text-center text-gray-700"><span>No results found.  Search Again </span></p>
