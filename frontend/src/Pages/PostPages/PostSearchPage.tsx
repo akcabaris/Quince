@@ -3,13 +3,14 @@ import { PostGet } from '../../Models/Post';
 import { postGetAPI, postLengthGetAPI } from '../../Service/PostService';
 import { handleError } from '../../Helpers/ErrorHandler';
 import cities from '../../Arguments/cities.json';
-import categories from '../../Arguments/category.json';
 import Pagination from '../../Components/Pagination/Pagination';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ListPost from '../../Components/Post/ListPost';
 import { useAuth } from '../../Context/useAuth';
 import { useLocation } from 'react-router-dom';
 import Spinner from '../../Components/Spinners/Spinner';
+import { Category } from '../../Models/Category';
+import { GetCategoriesAPI } from '../../Service/CategoryService';
 
 
 
@@ -31,7 +32,17 @@ const PostSearchPage = () => {
 
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [categoryList, setCategoryList] = useState<Category[]>();
 
+  const GetCategories = async () => {
+    const categoryListFromAPI = await GetCategoriesAPI();
+    if(categoryListFromAPI != null && categoryListFromAPI.data != null){
+      setCategoryList(categoryListFromAPI.data);
+    }
+  }
+  useEffect(() => {
+    GetCategories();
+  },[])
 
   const navigate = (currentPage: number) => {
     setCurrentPage(currentPage);
@@ -151,7 +162,7 @@ const PostSearchPage = () => {
 
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="border border-gray-300 rounded-md py-2 px-4 mb-2 w-2/4">
             <option value="">All Categories</option>
-            {categories.map((category, index) => (<option key={index} value={category}>{category}</option>))}
+            {categoryList && categoryList.map((category, index) => (<option key={index} value={category.categoryName}>{category.categoryName}</option>))}
           </select>
 
           <button onClick={handleSearch} className="bg-gradient-to-r from-green-900 to-green-700 disabled:hover:from-green-900 disabled:hover:to-green-700 hover:from-sky-800 hover:to-sky-600 text-white font-bold py-2 px-4 rounded w-1/4"

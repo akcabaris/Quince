@@ -14,5 +14,6 @@ namespace ApplicationLLA.Server.Interfaces
         Task<bool> CheckLimit(string workerId, int limit);
         Task<Post?> UpdateAsync(int id, Post postModel);
         Task<Post?> DeleteAsync(int id);
+        Task<int> GetCountPostOfCategory(string category);
     }
 }

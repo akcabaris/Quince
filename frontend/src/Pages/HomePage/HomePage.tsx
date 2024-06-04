@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleError } from '../../Helpers/ErrorHandler';
-import categories from '../../Arguments/category.json';
 import { BsSearch } from "react-icons/bs";
-import { QualityTileData, TrendCategoryData } from '../../Data';
+import { QualityTileData } from '../../Data';
 import Tiles from '../../Components/Card/Card';
 import TileWithDescription from '../../Components/Card/CardWithDescription';
+import { Category } from '../../Models/Category';
+import { GetCategoriesAPI } from '../../Service/CategoryService';
 
 
 type Props = {};
@@ -13,6 +14,27 @@ type Props = {};
 const HomePage = (props: Props) => {
   const [category, setCategory] = useState<string>("");
   const categoryNavigate = useNavigate();
+
+  const [categoryList, setCategoryList] = useState<Category[]>();
+
+  const GetCategories = async () => {
+    const categoryListFromAPI = await GetCategoriesAPI();
+    if(categoryListFromAPI != null && categoryListFromAPI.data != null){
+      setCategoryList(categoryListFromAPI.data);
+    }
+  }
+  useEffect(() => {
+    GetCategories();
+  },[])
+  const [trendCategories, setTrendCategories] = useState<Category[]>([]);
+
+useEffect(() => {
+  if (categoryList) {
+    const sortedCategories = [...categoryList].sort((a, b) => b.countOfSearch - a.countOfSearch);
+    const topTrending = sortedCategories.slice(0, 9);
+    setTrendCategories(topTrending);
+  }
+}, [categoryList]);
 
   const handleClick = () => {
     try {
@@ -50,9 +72,9 @@ const HomePage = (props: Props) => {
           className="w-full border-cyan-700 rounded-md px-4"
         >
           <option value="">All Categories</option>
-          {categories.map((category, index) => (
-            <option key={index} value={category}>
-              {category}
+          {categoryList && categoryList.map((category, index) => (
+            <option key={index} value={category.categoryName}>
+              {category.categoryName}
             </option>
           ))}
         </select>
@@ -67,10 +89,10 @@ const HomePage = (props: Props) => {
         Trend Services
       </h1>
       <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 w-4/5 mx-auto">
-      {TrendCategoryData != null && TrendCategoryData.map((category, index) => (
+      {trendCategories != null && trendCategories.map((category, index) => (
       <div key={index} className="p-2 border rounded-md cursor-pointer text-xl hover:bg-gray-100 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
-       onClick={() => handleTileClick(category.id)}>
-          <Tiles name={category.id} imgUrl={category.url} />
+       onClick={() => handleTileClick(category.categoryName)}>
+          <Tiles name={category.categoryName} imgUrl={category.pictureLink} countOfSearch={category.countOfSearch} countOfPost={category.countOfPost}/>
         </div>
       ))}
     </div>

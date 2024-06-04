@@ -4,12 +4,13 @@ import { useForm } from 'react-hook-form';
 import { AddPost } from '../../Models/Post';
 import { handleError } from '../../Helpers/ErrorHandler';
 import { toast } from 'react-toastify';
-import categories from '../../Arguments/category.json';
 import cities from '../../Arguments/cities.json';
 import currencyList from '../../Arguments/currencyList.json';
 import workUnits from '../../Arguments/workUnits.json';
 import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
+import { GetCategoriesAPI } from '../../Service/CategoryService';
+import { Category } from '../../Models/Category';
 
 type Props = {
   onClose: () => void; 
@@ -31,6 +32,18 @@ const AddPostModal = ({ onClose, handleGetUserPosts }: Props) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
   const [cityError, setCityError] = useState<string | null>();
   const [countyError, setCountyError] = useState<string | null>();
+
+  const [categoryList, setCategoryList] = useState<Category[]>();
+
+  const GetCategories = async () => {
+    const categoryListFromAPI = await GetCategoriesAPI();
+    if(categoryListFromAPI != null && categoryListFromAPI.data != null){
+      setCategoryList(categoryListFromAPI.data);
+    }
+  }
+  useEffect(() => {
+    GetCategories();
+  },[])
 
   const {
     register,
@@ -102,8 +115,8 @@ const AddPostModal = ({ onClose, handleGetUserPosts }: Props) => {
           {...register('category')}
           defaultValue={"Select a Category"}
         >          <option value="">Select a Category</option>
-          {categories.map((category, index) => (
-            <option key={index} value={category}>{category}</option>
+          {categoryList && categoryList.map((category, index) => (
+            <option key={index} value={category.categoryName}>{category.categoryName}</option>
           ))}
         </select>
         {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>}

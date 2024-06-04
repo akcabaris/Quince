@@ -23,12 +23,14 @@ namespace ApplicationLLA.Server.Controllers
         private readonly IWorkerRepository _workerRepo;
         private readonly UserManager<AppUser> _userManager;
         private readonly ICustomerRepository _customerRepo;
-        public PostController(IPostRepository postRepo, IWorkerRepository workerRepo, UserManager<AppUser> userManager, ICustomerRepository customerRepo)
+        private readonly ICategoryRepository _categoryRepository;
+        public PostController(IPostRepository postRepo, IWorkerRepository workerRepo, UserManager<AppUser> userManager, ICustomerRepository customerRepo, ICategoryRepository categoryRepository)
         {
             _workerRepo = workerRepo;
             _customerRepo = customerRepo;
             _postRepo = postRepo;
             _userManager = userManager;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet("getPost")]
@@ -40,8 +42,15 @@ namespace ApplicationLLA.Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+
+
             var postModel = await _postRepo.GetPostByCityCountyCategoryAsync(postQueryObject);
 
+            if (postQueryObject.Category != null)
+            {
+                await _categoryRepository.IncrementCountOfSearch(postQueryObject.Category);
+
+            }
             var allPostDtoList = new List<AllPostDto>();
 
 
@@ -216,9 +225,9 @@ namespace ApplicationLLA.Server.Controllers
             }
             else if (checkLimit == false)
             {
-                return Ok("You can create only "+ postLimit +" Post.");
+                return Ok("You can create only " + postLimit + " Post.");
             }
-                return BadRequest();
+            return BadRequest();
 
         }
 

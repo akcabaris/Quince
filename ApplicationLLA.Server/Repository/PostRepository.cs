@@ -51,6 +51,11 @@ namespace ApplicationLLA.Server.Repository
             return postModel;
         }
 
+        public async Task<int> GetCountPostOfCategory(string category)
+        {
+            return await _context.Posts.CountAsync(x => x.Category == category);
+        }
+
         public async Task<List<Post>> GetPostByCityCountyCategoryAsync(PostQueryObject postQueryObject)
         {
             var posts = _context.Posts.AsQueryable();
