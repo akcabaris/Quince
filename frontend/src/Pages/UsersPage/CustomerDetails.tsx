@@ -15,8 +15,7 @@ type Props = {}
 
 
 const allowedFileExtensions = [".jpg", ".jpeg", ".png"];
-const maxFileSize = 1 * 1024 * 1024;
-
+const maxFileSize = 1 * 1024 * 1024; // 1 MB
 
 const CustomerDetails = (props: Props) => {
   const [error, setError] = useState<string | null>(null);
@@ -24,19 +23,22 @@ const CustomerDetails = (props: Props) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [loading, setLoading] = useState<boolean>();
 
-
-  const handleGetCustomer = async () => {
-    setLoading(true);
+  const handleUpdateCustomer = async (data: CustomerPUT) => {
     try {
-      const response = await CustomerGetAPI();
-      if (response && response.data != null) {
-        setCustomer(response.data);
+      const response = await CustomerPutAPI(data);
+      if(response && response.status == 200) {
+        toast.success("Account information updated successfully!");
+      }
+      else {
+        toast.warn("Failed to update account information.")
       }
     } catch (error) {
       handleError(error);
     }
-    setLoading(false);
+    setIsButtonDisabled(true);
+    setTimeout(() => setIsButtonDisabled(false), 1500);
   };
+
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -84,6 +86,18 @@ const CustomerDetails = (props: Props) => {
       }
     }
   };
+  const handleGetCustomer = async () => {
+    setLoading(true);
+    try {
+      const response = await CustomerGetAPI();
+      if (response && response.data != null) {
+        setCustomer(response.data);
+      }
+    } catch (error) {
+      handleError(error);
+    }
+    setLoading(false);
+  };
 
   const handleDeletePhoto = async () => {
     try {
@@ -96,21 +110,7 @@ const CustomerDetails = (props: Props) => {
   };
 
 
-  const handleUpdateCustomer = async (data: CustomerPUT) => {
-    try {
-      const response = await CustomerPutAPI(data);
-      if(response && response.status == 200) {
-        toast.success("Account information updated successfully!");
-      }
-      else {
-        toast.warn("Failed to update account information.")
-      }
-    } catch (error) {
-      handleError(error);
-    }
-    setIsButtonDisabled(true);
-    setTimeout(() => setIsButtonDisabled(false), 1500);
-  };
+
 
   const validation = Yup.object().shape({
     fullName: Yup.string().default(customer?.fullName).required("Full Name is required")

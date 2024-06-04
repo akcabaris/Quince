@@ -73,7 +73,7 @@ namespace ApplicationLLA.Server.Repository
 
         public async Task<bool> DeleteProfilePicAsync(string id)
         {
-            var existsCustomer = await _context.Workers.FirstOrDefaultAsync(x => x.AppUserId == id);
+            var existsCustomer = await _context.Customers.FirstOrDefaultAsync(x => x.AppUserId == id);
             if (existsCustomer == null) return false;
 
             existsCustomer.PictureLink = null;

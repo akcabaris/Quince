@@ -58,6 +58,7 @@ const PostSearchPage = () => {
 
   const handleSearch = async () => {
     setLoading(true);
+    setCurrentPage(1);
     setIsSearched(true);
     try {
       setPageCity(city);

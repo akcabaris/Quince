@@ -105,7 +105,7 @@ const [reservationNoteError, setReservationNoteError] = useState<string>("");
             <img className='w-12 items-center rounded-lg' src={postValue.pictureLink === "http://localhost:5279/resources/" ? "/img/profile.png" : postValue.pictureLink} alt="" />
             <p className='px-1 items-center font-serif text-md text-darkBlue'>{postValue.workerName} </p>
           </div>
-          {user?.accountType == "Customer" ? (
+          {user?.accountType == "Customer" || user?.accountType == "Worker" ? (
 
             <button onClick={handleCreateConversation}
               title='Send Message'
