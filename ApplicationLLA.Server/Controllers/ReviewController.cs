@@ -27,6 +27,7 @@ namespace ApplicationLLA.Server.Controllers
             _userManager = userManager;
             _reviewRepo = reviewRepo;
             _customerRepo = customerRepo;
+            _workerRepo = workerRepo;
         }
 
 
