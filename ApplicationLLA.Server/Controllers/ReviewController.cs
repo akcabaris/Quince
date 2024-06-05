@@ -22,7 +22,7 @@ namespace ApplicationLLA.Server.Controllers
         private readonly IWorkerRepository _workerRepo;
         private readonly ICustomerRepository _customerRepo;
 
-        public ReviewController(IReviewRepository reviewRepo, UserManager<AppUser> userManager, WorkerRepository workerRepo, CustomerRepository customerRepo)
+        public ReviewController(IReviewRepository reviewRepo, UserManager<AppUser> userManager, IWorkerRepository workerRepo, ICustomerRepository customerRepo)
         {
             _userManager = userManager;
             _reviewRepo = reviewRepo;
