@@ -12,6 +12,7 @@ import { GetCategoriesAPI } from '../../Service/CategoryService';
 type Props = {};
 
 const HomePage = (props: Props) => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   const [category, setCategory] = useState<string>("");
   const categoryNavigate = useNavigate();
 

@@ -40,7 +40,7 @@ namespace ApplicationLLA.Server.Controllers
 
             if (workerId == null) { return BadRequest(); }
 
-            if (await _workerRepo.IsWorkerExistsAsync(workerId)) { return BadRequest(); }
+            if (!(await _workerRepo.IsWorkerExistsAsync(workerId))) { return BadRequest("Worker does not exists"); }
 
             var reviews = await _reviewRepo.GetWorkersReviewsAsync(workerId);
 
@@ -58,7 +58,7 @@ namespace ApplicationLLA.Server.Controllers
         }
 
         [HttpGet("GetReviewsForProfile")]
-        [Authorize("Worker")]
+        [Authorize(Roles = "Worker,Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -100,9 +100,10 @@ namespace ApplicationLLA.Server.Controllers
         }
 
         [HttpPost]
-        [Authorize("Customer")]
+        [Authorize(Roles = "Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateReview([FromBody] CreateReviewDto createReviewDto)
         {
@@ -115,7 +116,7 @@ namespace ApplicationLLA.Server.Controllers
 
             if (!(await _customerRepo.IsCustomerExistsAsync(appUser.Id.ToString())))
             {
-                return BadRequest();
+                return StatusCode(403);
             }
 
             if((await _reviewRepo.CheckExistsAsync(appUser.Id.ToString(), createReviewDto.ReservationId)))

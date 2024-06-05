@@ -31,6 +31,7 @@ const validation = Yup.object().shape({
 });
 
 const RegisterPageWorker = (props: Props) => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   const { registerUser } = useAuth();
   const {
     register,

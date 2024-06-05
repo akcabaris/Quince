@@ -19,6 +19,7 @@ const validation = Yup.object().shape({
 });
 
 const LoginPage = (props: Props) => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   const { loginUser } = useAuth();
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const {
@@ -34,7 +35,7 @@ const LoginPage = (props: Props) => {
   }
 
   return (
-    <section className='bg-gray-50 md'>
+    <section className='bg-gray-50 min-h-screen'>
       <div className='flex  items-center justify-center  xl:relative px-6 py-3 mx-auto lg: md:h-screen lg:pt lg:py-0'>
         <div className='w-full bg-gray-50 rounded-xl shadow-lg xl:absolute xl:top-5 border-gray-600 leading-5 md:mb-20 sm:max-w-md xl:p-0'>
           <div className='p-6 space-y-4 md:space-y-6 sm:p-8'>

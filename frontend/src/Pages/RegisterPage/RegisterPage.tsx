@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const RegisterPage = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   return (
     <div className='md:min-h-[680px]'>
     <div className="flex justify-center mt-8 w-4/5 mx-auto flex-wrap md:flex-nowrap">

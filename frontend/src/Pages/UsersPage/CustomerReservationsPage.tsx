@@ -125,7 +125,7 @@ const CustomerReservationsPage = (props: Props) => {
               </div>
             </div>
           ))
-        ) : null}
+        ) : <h1 className='text-center'>You don't have any Reservation.</h1>}
       </div>
     )
   );
