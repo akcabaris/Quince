@@ -338,6 +338,40 @@ namespace ApplicationLLA.Server.Migrations
                     b.ToTable("Reservations");
                 });
 
+            modelBuilder.Entity("ApplicationLLA.Server.Models.Review", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
+
+                    b.Property<int>("ReviewScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewText")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("nvarchar(240)");
+
+                    b.Property<string>("ReviewToUserId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("ReviewWriterUserId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("reservationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("ApplicationLLA.Server.Models.Worker", b =>
                 {
                     b.Property<string>("AppUserId")
@@ -404,13 +438,13 @@ namespace ApplicationLLA.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a7054afd-f3c5-4b80-9b32-4a4e591b1ebe",
+                            Id = "248ea488-e0a6-47b4-9f85-64983fce282a",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = "a5be8b2a-607d-45da-8e35-184b164ba061",
+                            Id = "093d610a-398c-4d69-acf2-df22712b28c1",
                             Name = "Worker",
                             NormalizedName = "WORKER"
                         });

@@ -4,8 +4,8 @@ namespace ApplicationLLA.Server.Interfaces
 {
     public interface ICategoryRepository
     {
-        Task<Category[]> GetCategories();
+        Task<Category[]> GetCategoriesAsync();
 
-        Task<bool> IncrementCountOfSearch(string categoryName);
+        Task<bool> IncrementCountOfSearchAsync(string categoryName);
     }
 }

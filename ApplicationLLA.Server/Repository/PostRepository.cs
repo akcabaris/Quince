@@ -51,7 +51,7 @@ namespace ApplicationLLA.Server.Repository
             return postModel;
         }
 
-        public async Task<int> GetCountPostOfCategory(string category)
+        public async Task<int> GetCountPostOfCategoryAsync(string category)
         {
             return await _context.Posts.CountAsync(x => x.Category == category);
         }

@@ -29,13 +29,15 @@ namespace ApplicationLLA.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCategories()
         {
-            var categoryList = await _categoryRepository.GetCategories();
+            if (!ModelState.IsValid) { return BadRequest(); }
+
+            var categoryList = await _categoryRepository.GetCategoriesAsync();
 
             var categoryDtoList = new List<CategoryDto>();
 
             foreach (var category in categoryList)
             {
-                var countOfPost = await _postRepository.GetCountPostOfCategory(category.CategoryName);
+                var countOfPost = await _postRepository.GetCountPostOfCategoryAsync(category.CategoryName);
                 var categoryDto = category.ToCategoryDto(countOfPost);
                 categoryDtoList.Add(categoryDto);
             }

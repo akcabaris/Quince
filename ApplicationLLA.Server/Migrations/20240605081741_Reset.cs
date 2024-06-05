@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ApplicationLLA.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class ConversationTable : Migration
+    public partial class Reset : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,6 +28,21 @@ namespace ApplicationLLA.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    CountOfSearch = table.Column<long>(type: "bigint", nullable: false),
+                    PictureLink = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Conversations",
                 columns: table => new
                 {
@@ -35,6 +50,9 @@ namespace ApplicationLLA.Server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstUserId = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     SecondUserId = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LastReadDateFirstUser = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastReadDateSecondUser = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NumberOfUnreadMessages = table.Column<int>(type: "int", nullable: false),
                     IsDeletedFromFirstUser = table.Column<bool>(type: "bit", nullable: false),
                     IsDeletedFromSecondUser = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -50,13 +68,30 @@ namespace ApplicationLLA.Server.Migrations
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PictureLink = table.Column<string>(type: "nvarchar(254)", maxLength: 254, nullable: true),
                     FullName = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    PhoneNumber = table.Column<long>(type: "bigint", maxLength: 15, nullable: false),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Gender = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true)
+                    Gender = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customer", x => x.AppUserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    ReviewId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReviewText = table.Column<string>(type: "nvarchar(240)", maxLength: 240, nullable: false),
+                    ReviewScore = table.Column<int>(type: "int", nullable: false),
+                    reservationId = table.Column<int>(type: "int", nullable: false),
+                    ReviewToUserId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    ReviewWriterUserId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.ReviewId);
                 });
 
             migrationBuilder.CreateTable(
@@ -204,10 +239,11 @@ namespace ApplicationLLA.Server.Migrations
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PictureLink = table.Column<string>(type: "nvarchar(254)", maxLength: 254, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    PhoneNumber = table.Column<long>(type: "bigint", maxLength: 15, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Occupation = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    Occupation = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    postLimit = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -266,7 +302,9 @@ namespace ApplicationLLA.Server.Migrations
                     Category = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     Title = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
-                    Price = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    PriceCurrency = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    PriceWorkUnit = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
                     City = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     County = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     IsPostActive = table.Column<bool>(type: "bit", nullable: false),
@@ -292,7 +330,8 @@ namespace ApplicationLLA.Server.Migrations
                     CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReservationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ReservationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReservationNote = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -316,8 +355,8 @@ namespace ApplicationLLA.Server.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "155504e5-d1a5-4792-bb67-c25ee870ed07", null, "Worker", "WORKER" },
-                    { "54165d2b-52a8-4334-813f-3c51f5fd33f9", null, "Customer", "CUSTOMER" }
+                    { "093d610a-398c-4d69-acf2-df22712b28c1", null, "Worker", "WORKER" },
+                    { "248ea488-e0a6-47b4-9f85-64983fce282a", null, "Customer", "CUSTOMER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -416,10 +455,16 @@ namespace ApplicationLLA.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
                 name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "Reservations");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

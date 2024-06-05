@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApplicationLLA.Server.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240603095942_CustomerPhoneToInt64")]
-    partial class CustomerPhoneToInt64
+    [Migration("20240605081741_Reset")]
+    partial class Reset
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,6 +100,31 @@ namespace ApplicationLLA.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ApplicationLLA.Server.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<long>("CountOfSearch")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PictureLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("ApplicationLLA.Server.Models.Conversation", b =>
                 {
                     b.Property<int>("Id")
@@ -152,8 +177,8 @@ namespace ApplicationLLA.Server.Migrations
                         .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("Gender")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
 
                     b.Property<long>("PhoneNumber")
                         .HasMaxLength(15)
@@ -316,6 +341,40 @@ namespace ApplicationLLA.Server.Migrations
                     b.ToTable("Reservations");
                 });
 
+            modelBuilder.Entity("ApplicationLLA.Server.Models.Review", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
+
+                    b.Property<int>("ReviewScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewText")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("nvarchar(240)");
+
+                    b.Property<string>("ReviewToUserId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("ReviewWriterUserId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("reservationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("ApplicationLLA.Server.Models.Worker", b =>
                 {
                     b.Property<string>("AppUserId")
@@ -382,13 +441,13 @@ namespace ApplicationLLA.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e66a7b15-6f51-4f16-a89a-1c80b66c6e00",
+                            Id = "248ea488-e0a6-47b4-9f85-64983fce282a",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = "a012e5e8-f4f2-49dc-865a-3b205953f3fc",
+                            Id = "093d610a-398c-4d69-acf2-df22712b28c1",
                             Name = "Worker",
                             NormalizedName = "WORKER"
                         });

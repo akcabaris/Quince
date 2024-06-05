@@ -48,7 +48,7 @@ namespace ApplicationLLA.Server.Controllers
 
             if (postQueryObject.Category != null)
             {
-                await _categoryRepository.IncrementCountOfSearch(postQueryObject.Category);
+                await _categoryRepository.IncrementCountOfSearchAsync(postQueryObject.Category);
 
             }
             var allPostDtoList = new List<AllPostDto>();

@@ -97,6 +97,7 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 
 builder.Services.AddCors(options =>

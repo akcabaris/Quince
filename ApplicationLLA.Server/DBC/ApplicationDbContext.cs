@@ -16,6 +16,7 @@ namespace ApplicationLLA.Server.DBC
         public DbSet<Conversation> Conversations { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
