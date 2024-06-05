@@ -46,7 +46,7 @@ const Sidebar = (props: Props) => {
   }
 
   return (
-    <div className='hidden lg:flex l-0 flex-col bg-gray-200 min-w-60 p-4 fixed left-0 h-full'>
+    <div className='hidden md:flex l-0 flex-col bg-gray-200 min-w-60 p-4 fixed left-0 h-full'>
       {items.map((item, index) => (
         <Link to={item.to} replace={true} key={index} className=" border-b border-gray-400 px-4 py-6 h-10 w-auto text-gray-800 hover:bg-gray-400 flex items-center ">
           <item.Icon />

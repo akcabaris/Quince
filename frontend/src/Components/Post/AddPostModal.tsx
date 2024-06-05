@@ -11,6 +11,7 @@ import * as Yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { GetCategoriesAPI } from '../../Service/CategoryService';
 import { Category } from '../../Models/Category';
+import { Navigate, useNavigate } from 'react-router';
 
 type Props = {
   onClose: () => void; 
@@ -32,6 +33,7 @@ const AddPostModal = ({ onClose, handleGetUserPosts }: Props) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
   const [cityError, setCityError] = useState<string | null>();
   const [countyError, setCountyError] = useState<string | null>();
+  const navigate = useNavigate();
 
   const [categoryList, setCategoryList] = useState<Category[]>();
 
@@ -62,6 +64,7 @@ const AddPostModal = ({ onClose, handleGetUserPosts }: Props) => {
         toast.success('Post created successfully');
       } else if (typeof response?.data === 'string' && response?.status === 200) {
         toast.warn(response.data);
+        response.data == 'You have to Update your Profile' ? (navigate("/worker-profile")) : (<></>);
       } else if (typeof response?.data === 'string' && response?.status === 400) {
         toast.error(response?.data);
       } else {

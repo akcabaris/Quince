@@ -42,15 +42,8 @@ namespace ApplicationLLA.Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-
-
             var postModel = await _postRepo.GetPostByCityCountyCategoryAsync(postQueryObject);
 
-            if (postQueryObject.Category != null)
-            {
-                await _categoryRepository.IncrementCountOfSearchAsync(postQueryObject.Category);
-
-            }
             var allPostDtoList = new List<AllPostDto>();
 
 
@@ -90,6 +83,12 @@ namespace ApplicationLLA.Server.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (postQueryObject.Category != null)
+            {
+                await _categoryRepository.IncrementCountOfSearchAsync(postQueryObject.Category);
+
+            }
 
             var postLength = await _postRepo.GetPostLenghtForSearchAsync(postQueryObject);
 
@@ -212,6 +211,11 @@ namespace ApplicationLLA.Server.Controllers
             if (worker == null)
             {
                 return BadRequest("Worker does not exists");
+            }
+
+            if(worker.FullName.Length == 0)
+            {
+                return Ok("You have to Update your Profile");
             }
 
             int postLimit = worker.postLimit;
