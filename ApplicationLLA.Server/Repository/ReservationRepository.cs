@@ -15,7 +15,7 @@ namespace ApplicationLLA.Server.Repository
 
         public async Task<Reservation?> ApproveOrDenyReservationAsync(int id, string status)
         {
-            var existingReserv = await _context.Reservations.FirstOrDefaultAsync(x=> x.ReservationId == id);
+            var existingReserv = await _context.Reservations.FirstOrDefaultAsync(x => x.ReservationId == id);
 
             if (existingReserv == null) return null;
 
@@ -28,15 +28,25 @@ namespace ApplicationLLA.Server.Repository
             return existingReserv;
         }
 
-        public async Task<bool> CheckReservationExistsAsync(Customer customer, Post post)
+        public async Task<string> GetReservationStatus(string customerId, int postId)
         {
-            return await _context.Reservations.AnyAsync(x => x.CustomerId == customer.AppUserId && x.PostId == post.PostId); ;
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.PostId == postId);
+            if (reservation == null) { return "Reservation isn't exists"; }
+
+            return reservation.Status;
+
         }
 
-        public async Task<bool> CheckReservationExistsAsync(int id)
+        public async Task<string> GetReservationStatusById(int reservationId)
         {
-            return await _context.Reservations.AnyAsync(x => x.ReservationId == id);
+
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(x => x.ReservationId == reservationId);
+            if (reservation == null) { return "Reservation isn't exists"; }
+
+            return reservation.Status;
+
         }
+
 
         public async Task<Reservation> CreateAsync(Reservation reservModel)
         {
@@ -54,7 +64,6 @@ namespace ApplicationLLA.Server.Repository
 
             _context.Remove(reservModel);
             await _context.SaveChangesAsync();
-
             return reservModel;
         }
 
@@ -73,12 +82,20 @@ namespace ApplicationLLA.Server.Repository
                     PostId = reservation.PostId,
                     ReservationDate = reservation.ReservationDate,
                     Status = reservation.Status,
-                    ReservationNote=reservation.ReservationNote,
+                    ReservationNote = reservation.ReservationNote,
                     ReservationId = reservation.ReservationId
 
                 }).ToListAsync();
-                
-         
+
+
         }
+
+        public async Task<bool> CheckIsOwnerRight(string userId, int reservationId)
+        {
+            return await _context.Reservations.AnyAsync(r => r.ReservationId == reservationId && r.CustomerId == userId);
+
+        }
+
+
     }
 }

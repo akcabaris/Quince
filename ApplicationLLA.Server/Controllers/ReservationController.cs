@@ -83,6 +83,13 @@ namespace ApplicationLLA.Server.Controllers
 
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
+
+            // Users can delete the reservation only if the reservationStatus is "Waiting" or "Denied",
+            // Users can write review if the reservation status is done. I'm writing this information because if they try to delete reservation, some problem may occur
+            // If they try to delete the reservation after it's done or denied (or approved), I should either delete the reviews or not allow the deletion of the reservation
+            // So I choose to only let them delete the reservation if the status is "Waiting";
+
+
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var userMail = User.GetUserMail();
             var appUSer = await _userManager.FindByEmailAsync(userMail);
@@ -91,17 +98,22 @@ namespace ApplicationLLA.Server.Controllers
                 return BadRequest("User does not exists");
             }
 
-
-            var reservModel = await _reservRepo.DeleteAsync(id);
-
-            if (reservModel == null) return NotFound();
-
-            if (appUSer.CustomerId != null && (reservModel.CustomerId != appUSer.CustomerId.ToString()))
+            if (appUSer.CustomerId != null && (await _reservRepo.CheckIsOwnerRight(appUSer.Id.ToString(), id)))
             {
                 return BadRequest("You can't delete other user's reservations");
             }
 
-            return Ok();
+            var reservationStatus = await _reservRepo.GetReservationStatusById(id);
+            if(reservationStatus == "Waiting" || reservationStatus == "Denied")
+            {
+                var reservModel = await _reservRepo.DeleteAsync(id);
+                if (reservModel == null) return NotFound();
+                return Ok();
+            }
+            else
+            {
+                return Ok("You can delete your reservation only if the status is waiting");
+            }
         }
 
         [HttpGet]

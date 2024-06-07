@@ -8,5 +8,6 @@ namespace ApplicationLLA.Server.Interfaces
         Task<bool> CheckExistsAsync(string writerUserId, int reservationId);
         Task<List<Review>> GetReviewsForWriterAsync(string writerUserId);
         Task<List<Review>> GetWorkersReviewsAsync(string userId);
+        Task<bool> DeleteAsync(int reviewId);
     }
 }

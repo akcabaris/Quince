@@ -8,8 +8,9 @@ namespace ApplicationLLA.Server.Interfaces
         Task<Reservation?> DeleteAsync(int id);
         Task<List<Reservation>> GetUsersReservationsAsync(Customer customer);
         Task<Reservation?> GetByIdAsync(int id);
+        Task<bool> CheckIsOwnerRight(string userId, int reservationId);
         Task<Reservation?> ApproveOrDenyReservationAsync(int id, string status);
-        Task<bool> CheckReservationExistsAsync(Customer customer, Post post);
-        Task<bool> CheckReservationExistsAsync(int id);
+        Task<string> GetReservationStatus(string customerId, int postId);
+        Task<string> GetReservationStatusById(int reservationId);
     }
 }

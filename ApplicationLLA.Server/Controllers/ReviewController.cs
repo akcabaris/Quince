@@ -21,13 +21,15 @@ namespace ApplicationLLA.Server.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IWorkerRepository _workerRepo;
         private readonly ICustomerRepository _customerRepo;
+        private readonly IReservationRepository _reservationRepo;
 
-        public ReviewController(IReviewRepository reviewRepo, UserManager<AppUser> userManager, IWorkerRepository workerRepo, ICustomerRepository customerRepo)
+        public ReviewController(IReviewRepository reviewRepo, UserManager<AppUser> userManager, IWorkerRepository workerRepo, ICustomerRepository customerRepo, IReservationRepository reservationRepo)
         {
             _userManager = userManager;
             _reviewRepo = reviewRepo;
             _customerRepo = customerRepo;
             _workerRepo = workerRepo;
+            _reservationRepo = reservationRepo;
         }
 
 
@@ -104,6 +106,7 @@ namespace ApplicationLLA.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateReview([FromBody] CreateReviewDto createReviewDto)
         {
@@ -116,19 +119,36 @@ namespace ApplicationLLA.Server.Controllers
 
             if (!(await _customerRepo.IsCustomerExistsAsync(appUser.Id.ToString())))
             {
+                return Unauthorized();
+            }
+
+            // check the owner of the reservation
+            if (!(await _reservationRepo.CheckIsOwnerRight(appUser.Id, createReviewDto.ReservationId)))
+            {
                 return StatusCode(403);
             }
 
-            if((await _reviewRepo.CheckExistsAsync(appUser.Id.ToString(), createReviewDto.ReservationId)))
+
+            if ((await _reviewRepo.CheckExistsAsync(appUser.Id.ToString(), createReviewDto.ReservationId)))
             {
                 return Ok("Review Already Exists");
             }
 
-            var createReview = await _reviewRepo.CreateReviewAsync(createReviewDto.ToReviewFromCreateDto(appUser.Id.ToString()));
 
-            if (createReview == null) { return StatusCode(500); }
+            var reservationStatus = await _reservationRepo.GetReservationStatusById(createReviewDto.ReservationId);
 
-            return Ok(createReview.ToReviewDto());
+            if (reservationStatus == "Done")
+            {
+                var createReview = await _reviewRepo.CreateReviewAsync(createReviewDto.ToReviewFromCreateDto(appUser.Id.ToString()));
+
+                if (createReview == null) { return StatusCode(500); }
+
+                return Ok(createReview.ToReviewDto());
+            }
+            else
+            {
+                return Ok("You can Write a Review only if the reservation status is Done");
+            }
         }
 
     }

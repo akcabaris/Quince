@@ -40,5 +40,15 @@ namespace ApplicationLLA.Server.Repository
             var reviewList = await _context.Reviews.Where(r => r.ReviewWriterUserId == writerUserId).ToListAsync();
             return reviewList;
         }
+
+        public async Task<bool> DeleteAsync(int reviewId)
+        {
+            var review = await _context.Reviews.FirstOrDefaultAsync(r => r.ReviewId == reviewId);
+            if(review == null) { return false; }
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+            return true;
+
+        }
     }
 }
