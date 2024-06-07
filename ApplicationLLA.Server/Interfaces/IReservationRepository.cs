@@ -11,6 +11,7 @@ namespace ApplicationLLA.Server.Interfaces
         Task<bool> CheckIsOwnerRight(string userId, int reservationId);
         Task<Reservation?> ApproveOrDenyReservationAsync(int id, string status);
         Task<string> GetReservationStatus(string customerId, int postId);
-        Task<string> GetReservationStatusById(int reservationId);
+        Task<string> GetReservationStatusById(int reservation);
+        Task <bool> CheckIsReservationExists(string userId, int postId);
     }
 }

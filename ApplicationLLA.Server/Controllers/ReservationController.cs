@@ -61,12 +61,11 @@ namespace ApplicationLLA.Server.Controllers
 
             if (post == null) { return BadRequest("Post couldn't found"); }
 
-            if (await _reservRepo.CheckReservationExistsAsync(customer, post)) return Ok("Reservation Already Exists");
-
+            if (await _reservRepo.CheckIsReservationExists(appUSer.Id, postId))
+                return Ok("Reservation Already Exists");
 
             var reservModel = reservDto.ToReservationFromCreate(postId, customer.AppUserId);
 
-            if (reservModel == null) return BadRequest("something went wrong");
 
             await _reservRepo.CreateAsync(reservModel);
 

@@ -96,6 +96,9 @@ namespace ApplicationLLA.Server.Repository
 
         }
 
-
+        public async Task<bool> CheckIsReservationExists(string userId, int postId)
+        {
+            return await _context.Reservations.AnyAsync(r => r.CustomerId == userId && r.PostId == postId);
+        }
     }
 }
