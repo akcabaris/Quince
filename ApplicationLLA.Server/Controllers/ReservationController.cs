@@ -87,7 +87,7 @@ namespace ApplicationLLA.Server.Controllers
             // Users can delete the reservation only if the reservationStatus is "Waiting" or "Denied",
             // Users can write review if the reservation status is done. I'm writing this information because if they try to delete reservation, some problem may occur
             // If they try to delete the reservation after it's done or denied (or approved), I should either delete the reviews or not allow the deletion of the reservation
-            // So I choose to only let them delete the reservation if the status is "Waiting";
+            // So I choose to only let them delete the reservation if the status is "Waiting" or "Denied";
 
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
