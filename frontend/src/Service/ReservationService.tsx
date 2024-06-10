@@ -20,7 +20,7 @@ export const CreateReservationAPI = async (postId: number, reservationDate: Date
 export const DeleteReservationAPI = async (reservationId:number)  => {
     try {
         const response = await axios.delete<AxiosResponse>(api+"Reservation/"+reservationId);
-        return response.data;
+        return response;
     } catch (error) {
         handleError(error)
     }

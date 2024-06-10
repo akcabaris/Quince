@@ -105,7 +105,7 @@ const MessagesPage: React.FC<Props> = () => {
 
     const handleClick = (conversation: ConversationGet) => {
         setClickedConversation(conversation);
-        setShowMessages(true); // Mobilde mesajları göster
+        setShowMessages(true);
     };
 
     const handleBackToConversations = () => {
@@ -172,7 +172,7 @@ const MessagesPage: React.FC<Props> = () => {
                     <h1 className='text-center font-light w-full border bg-gray-100 border-gray-400 rounded-xl py-2 text-md lg:text-lg xl:text-2xl m-0'>Messages</h1>
                     {loading ? < Spinner /> : (
                         <>
-                            {conversationValues && conversationValues.map((conversation) => (
+                            {conversationValues ? (conversationValues.map((conversation) => (
                                 <div key={conversation.conversationId} className="relative flex flex-row mt-4 bg-slate-50 items-center text-center rounded-md shadow-md opacity-80 hover:bg-slate-200 ">
                                     <img className='xxs:w-6 xs:w-10 md:w-12 lg:12 items-center rounded-full'
                                     src={conversation.pictureLink === "http://localhost:5279/resources/empty" ? "/img/profile.png" : conversation.pictureLink}
@@ -205,7 +205,7 @@ const MessagesPage: React.FC<Props> = () => {
                                     </button>
                                 </div>
                                 
-                            ))} </>
+                            ))) : (<h1 className='text-center mt-2'>You don't have any conversation</h1>) } </>
                     )}
                     
                 </div>

@@ -153,5 +153,30 @@ namespace ApplicationLLA.Server.Controllers
 
         }
 
+
+
+        [HttpGet("GetPublic")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetWorkerPublic([FromBody] string workerId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (workerId == null) return BadRequest();
+
+            var worker = await _workerRepo.GetByUserIdAsync(workerId);
+
+            if (worker == null) { return BadRequest(); }
+
+            var workerDto = worker.ToWorkerDto();
+
+            return Ok(workerDto);
+
+        }
+
     }
 }

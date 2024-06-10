@@ -1,4 +1,5 @@
 import { PostGet } from "./Post";
+import { ReviewGET } from "./Review";
 
 export type CustomerReservationGet = {
     reservationId: number;
@@ -7,4 +8,5 @@ export type CustomerReservationGet = {
     reservationDate: string;
     reservationNote: string;
     postDto: PostGet;
+    reviewDto: ReviewGET | null;
 }

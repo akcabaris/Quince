@@ -6,13 +6,23 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import Spinner from '../../Components/Spinners/Spinner';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { toast } from 'react-toastify';
-
+import ReviewCard from '../../Components/Reviews/ReviewCard';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import CreateIcon from '@mui/icons-material/Create';
+import CreateReviewModal from '../../Components/Modal/CreateReviewModal';
+import { CreateReviewAPI } from '../../Service/ReviewService';
+import { ReviewPOST } from '../../Models/Review';
+import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 type Props = {}
 
 const CustomerReservationsPage = (props: Props) => {
   const [reservationList, setReservationList] = useState<CustomerReservationGet[] | null>();
   const [loader, setLoader] = useState<boolean>();
-  const [isOpen, setIsOpen] = useState<boolean>(false); // 1. State'i tanımla
+  const [isPostOpen, setIsPostOpen] = useState<boolean>(false);
+  const [isReviewOpen, setIsReviewOpen] = useState<boolean>(false);
+  const [showCreateReviewModal, setCreateReviewModal] = useState<boolean>(false);
 
   const hangleGetCustomerReservations = async () => {
     setLoader(true);
@@ -31,7 +41,10 @@ const CustomerReservationsPage = (props: Props) => {
   }
   const handleDeleteReservation = async (reservationId: number) => {
     if (reservationId != null) {
-      await DeleteReservationAPI(reservationId);
+      const response = await DeleteReservationAPI(reservationId);
+      if (response && response.data) {
+        toast.info(response.data.toString())
+      }
     }
     hangleGetCustomerReservations();
   }
@@ -55,9 +68,33 @@ const CustomerReservationsPage = (props: Props) => {
     hangleGetCustomerReservations();
   }, [])
 
-  const handlePostToggle = () => { // 2. Post'un açılıp kapanmasını sağla
-    setIsOpen(!isOpen);
+  const handlePostToggle = () => {
+    setIsPostOpen(!isPostOpen);
   }
+  const handleReviewToggle = () => {
+    setIsReviewOpen(!isReviewOpen);
+  }
+
+  const renderStars = (score: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= score) {
+        stars.push(<StarIcon key={i} fontSize='large' className="text-yellow-300" />);
+      }
+      else if ((i - score) <= 0.75 && (i - score) > 0.25) {
+        stars.push(<StarHalfIcon key={i} fontSize='large' className="text-yellow-300" />);
+      }
+      else if (0.25 >= (i - score) && (i - score) > 0) {
+        stars.push(<StarIcon key={i} fontSize='large' className="text-yellow-300" />);
+      }
+      else {
+        stars.push(<StarBorderIcon key={i} fontSize='large' className="text-gray-300" />);
+      }
+    }
+    return stars;
+  };
+
+
 
   return (
     loader ? <Spinner /> : (
@@ -84,17 +121,62 @@ const CustomerReservationsPage = (props: Props) => {
                   ) : (
                     <></>
                   )}
-                  {reservationVal.status == "Waiting" || "Denied" ? (
+                  {reservationVal.status == "Waiting" || reservationVal.status == "Denied" ? (
                     <button
                       onClick={() => { handleDeleteReservation(reservationVal.reservationId) }}
-                      className='justify-end shadow-md bg-gradient-to-r from-yellow-500 to-yellow-400  hover:from-red-800 hover:to-red-700 text-white text-sm font-mono p-1 rounded transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-150'>
-                      Cancel
+                      className='justify-end shadow-md bg-gradient-to-r from-red-600 to-red-500  hover:from-red-700 hover:to-red-600 text-white text-sm font-mono p-1 rounded transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-150'>
+                      Delete
                     </button>) : (<></>)}
                 </div>
-                <div>
-                  <span onClick={handlePostToggle} className="cursor-pointer">Post <KeyboardArrowDownIcon /></span> {/* Post'a tıklandığında handlePostToggle fonksiyonunu çağır */}
-                  {isOpen && ( // Eğer isOpen true ise, post gösterilsin
-                    <div className="rounded-lg pb-2 px-2 md:mx-3 my-2 cursor-pointer border-spacing-2 text-xs shadow-blue-100/50 relative shadow-xl border max-w-180 min-h-48">
+
+
+                {
+                  reservationVal.status == "Done" ? (
+                    <>
+                      {
+                        reservationVal.reviewDto != null ? (
+                          <div className=''>
+                            <button onClick={handleReviewToggle}
+                              className="cursor-pointer border border-gray-600 p-2 m-2 rounded-md text-white bg-gradient-to-r from-cyan-900 to-cyan-700 hover:opacity-85">
+                              Review {isReviewOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}</button>
+                            {
+                              isReviewOpen ? (
+                                <div>
+                                  <ReviewCard review={reservationVal.reviewDto} />
+                                </div>
+                              ) : (<></>)
+                            }
+                          </div>) : (<>
+
+                            <button
+                              onClick={() => {
+                                setCreateReviewModal(true);
+                              }}
+                              className='border border-gray-600 p-2 rounded-md text-white bg-gradient-to-r from-cyan-900 to-cyan-700 hover:opacity-85'>
+                              Write a Review <CreateIcon />
+                            </button>
+                            {
+                              showCreateReviewModal ?
+                                <CreateReviewModal
+                                  reservationId={reservationVal.reservationId}
+                                  onClose={() => { setCreateReviewModal(false) }}
+                                  handleUpdate={() => { hangleGetCustomerReservations() }}
+                                />
+                                : (<></>)
+                            }
+                          </>)
+                      }</>
+                  ) : (
+                    <></>
+                  )
+
+
+                }
+
+                <div className="">
+                  <button onClick={handlePostToggle} className=" cursor-pointer border border-gray-600 p-2 rounded-md text-white bg-gradient-to-r from-green-900 to-green-700 hover:opacity-85">Post {isPostOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}</button> {/* Post'a tıklandığında handlePostToggle fonksiyonunu çağır */}
+                  {isPostOpen && ( // Eğer isOpen true ise, post gösterilsin
+                    <div> <div className="rounded-lg pb-2 px-2 md:mx-3 my-2 cursor-pointer border-spacing-2 text-xs shadow-blue-100/50 relative shadow-xl border max-w-180 min-h-48">
                       <div className="flex justify-between mt-4 w-full items-center rounded-md shadow-md opacity-80 relative">
                         <div className="flex items-center">
                           <img className='w-12 items-center rounded-lg' src={reservationVal.postDto.pictureLink === "http://localhost:5279/resources/" ? "/img/profile.png" : reservationVal.postDto.pictureLink} alt="" />
@@ -102,7 +184,14 @@ const CustomerReservationsPage = (props: Props) => {
                         </div>
                       </div>
                       <div>
-                        <p className='max-h-6 '>⭐️⭐️⭐️⭐️</p>
+                        {
+                          reservationVal.postDto.userScore != null ?
+                            <div className="text-lg font-medium flex flex-row mb-2 text-start">
+                              {renderStars(reservationVal.postDto.userScore)} {reservationVal.postDto.userScore}
+                            </div>
+                            : <></>
+                        }
+
                       </div>
                       <div className='rounded-sm text-center'>
                         <h1 className="font-mono">{reservationVal.postDto.title}</h1>
@@ -120,12 +209,17 @@ const CustomerReservationsPage = (props: Props) => {
                         </div>
                       </div>
                     </div>
+
+
+                    </div>
                   )}
                 </div>
               </div>
             </div>
           ))
         ) : <h1 className='text-center'>You don't have any Reservation.</h1>}
+
+
       </div>
     )
   );

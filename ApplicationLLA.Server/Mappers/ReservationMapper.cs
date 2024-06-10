@@ -1,5 +1,6 @@
 ﻿using ApplicationLLA.Server.Dtos.Post;
 using ApplicationLLA.Server.Dtos.Reservation;
+using ApplicationLLA.Server.Dtos.Review;
 using ApplicationLLA.Server.Models;
 
 namespace ApplicationLLA.Server.Mappers
@@ -20,7 +21,7 @@ namespace ApplicationLLA.Server.Mappers
             };
 
         }
-        public static ReservationDto ToReservationDto (this Reservation reservModel, string postTitle, string customerName, string pictureLink)
+        public static ReservationDto ToReservationDto (this Reservation reservModel, string postTitle, string customerName, string? pictureLink)
         {
             return new ReservationDto
             {
@@ -36,7 +37,7 @@ namespace ApplicationLLA.Server.Mappers
             };
         }
 
-        public static UserReservationDto ToUserReservationDto(this Reservation reservModel, AllPostDto postDto)
+        public static UserReservationDto ToUserReservationDto(this Reservation reservModel, PostDto postDto, ReviewDto? reviewDto)
         {
             return new UserReservationDto
             {
@@ -45,7 +46,8 @@ namespace ApplicationLLA.Server.Mappers
                 ReservationDate = reservModel.ReservationDate,
                 ReservationNote = reservModel.ReservationNote,
                 CustomerId = reservModel.CustomerId,
-                PostDto = postDto
+                PostDto = postDto,
+                ReviewDto = reviewDto,
             };
         }
 

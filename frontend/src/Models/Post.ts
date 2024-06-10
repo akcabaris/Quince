@@ -12,6 +12,7 @@ export type PostGet = {
     city: string;
     county: string;
     isPostActive: boolean;
+    userScore: number;
 }
 export type AddPost = {
     category: string;

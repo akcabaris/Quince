@@ -24,13 +24,15 @@ namespace ApplicationLLA.Server.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly ICustomerRepository _customerRepo;
         private readonly ICategoryRepository _categoryRepository;
-        public PostController(IPostRepository postRepo, IWorkerRepository workerRepo, UserManager<AppUser> userManager, ICustomerRepository customerRepo, ICategoryRepository categoryRepository)
+        private readonly IReviewRepository _reviewRepository;
+        public PostController(IPostRepository postRepo, IWorkerRepository workerRepo, UserManager<AppUser> userManager, ICustomerRepository customerRepo, ICategoryRepository categoryRepository, IReviewRepository reviewRepository)
         {
             _workerRepo = workerRepo;
             _customerRepo = customerRepo;
             _postRepo = postRepo;
             _userManager = userManager;
             _categoryRepository = categoryRepository;
+            _reviewRepository = reviewRepository;
         }
 
         [HttpGet("getPost")]
@@ -44,16 +46,18 @@ namespace ApplicationLLA.Server.Controllers
 
             var postModel = await _postRepo.GetPostByCityCountyCategoryAsync(postQueryObject);
 
-            var allPostDtoList = new List<AllPostDto>();
+            var allPostDtoList = new List<PostDto>();
 
 
 
             foreach (var post in postModel)
             {
                 var worker = await _workerRepo.GetByUserIdAsync(post.WorkerId);
+                
                 if (worker != null)
                 {
-                    var allPostDto = new AllPostDto
+                    var userScore = await _reviewRepository.GetWorkersReviewScore(worker.AppUserId);
+                    var allPostDto = new PostDto
                     {
                         WorkerName = worker.FullName,
                         PostId = post.PostId,
@@ -68,6 +72,7 @@ namespace ApplicationLLA.Server.Controllers
                         Description = post.Description,
                         IsPostActive = post.IsPostActive,
                         WorkerId = post.WorkerId,
+                        UserScore = userScore,
 
                     };
                     allPostDtoList.Add(allPostDto);
@@ -235,32 +240,6 @@ namespace ApplicationLLA.Server.Controllers
 
         }
 
-        [HttpPut]
-        [Authorize(Roles = "Worker")]
-        [Route("{postId:int}")]
-        [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update([FromRoute] int postId, [FromBody] UpdatePostDto updateDto)
-        {
-            var userMail = User.GetUserMail();
-            var appUser = await _userManager.FindByEmailAsync(userMail);
-            if (appUser == null) return BadRequest("User does not exists");
-
-            var worker = await _workerRepo.GetByUserIdAsync(appUser.Id.ToString());
-
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            if (updateDto == null) return BadRequest("Update Object is null");
-
-            var post = await _postRepo.UpdateAsync(postId, updateDto.ToPostFromUpdate(worker.AppUserId.ToString(), postId));
-
-            if (post == null) return BadRequest("Something went wrong");
-
-            return Ok(post.ToPostDtoOne());
-        }
-
         [HttpDelete]
         [Authorize(Roles = "Worker")]
         [Route("{id:int}")]
@@ -277,7 +256,7 @@ namespace ApplicationLLA.Server.Controllers
 
             if (postModel == null) return NotFound("Post does not exists");
 
-            return Ok(postModel.ToPostDtoFromDelete());
+            return Ok();
         }
     }
 }

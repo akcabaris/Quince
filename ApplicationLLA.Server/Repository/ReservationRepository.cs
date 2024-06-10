@@ -100,5 +100,12 @@ namespace ApplicationLLA.Server.Repository
         {
             return await _context.Reservations.AnyAsync(r => r.CustomerId == userId && r.PostId == postId);
         }
+
+        public async Task<int> GetPostIdFromReservation(int reservationId)
+        {
+            var reservation = await _context.Reservations.FindAsync(reservationId);
+            if (reservation == null) return 0;
+            return reservation.PostId;
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using ApplicationLLA.Server.Dtos.Reservation;
-using ApplicationLLA.Server.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ApplicationLLA.Server.Dtos.Post
 {
@@ -8,6 +6,8 @@ namespace ApplicationLLA.Server.Dtos.Post
     {
         public required int PostId { get; set; }
         public string WorkerId { get; set; } = string.Empty;
+        public string WorkerName { get; set; } = string.Empty;
+        public string? pictureLink { get; set; }
         public required string Category { get; set; }
         public required string Title { get; set; }
         public required string Description { get; set; }
@@ -20,6 +20,7 @@ namespace ApplicationLLA.Server.Dtos.Post
         public required string PriceWorkUnit { get; set; }
         public required string City { get; set; }
         public required string County { get; set; }
-        public required bool IsPostActive { get; set; } = true;
+        public required bool IsPostActive { get; set; } = false;
+        public double? UserScore { get; set; }
     }
 }

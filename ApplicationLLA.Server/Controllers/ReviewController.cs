@@ -22,14 +22,16 @@ namespace ApplicationLLA.Server.Controllers
         private readonly IWorkerRepository _workerRepo;
         private readonly ICustomerRepository _customerRepo;
         private readonly IReservationRepository _reservationRepo;
+        private readonly IPostRepository _postRepo;
 
-        public ReviewController(IReviewRepository reviewRepo, UserManager<AppUser> userManager, IWorkerRepository workerRepo, ICustomerRepository customerRepo, IReservationRepository reservationRepo)
+        public ReviewController(IReviewRepository reviewRepo, UserManager<AppUser> userManager, IWorkerRepository workerRepo, ICustomerRepository customerRepo, IReservationRepository reservationRepo, IPostRepository postRepo)
         {
             _userManager = userManager;
             _reviewRepo = reviewRepo;
             _customerRepo = customerRepo;
             _workerRepo = workerRepo;
             _reservationRepo = reservationRepo;
+            _postRepo = postRepo;
         }
 
 
@@ -55,51 +57,11 @@ namespace ApplicationLLA.Server.Controllers
                     reviewDtoList.Add(review.ToReviewDto());
                 }
             }
+
             return Ok(reviewDtoList);
 
         }
 
-        [HttpGet("GetReviewsForProfile")]
-        [Authorize(Roles = "Worker,Customer")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetReviewsForProfile()
-        {
-            if (!ModelState.IsValid) { return BadRequest(); }
-
-            var userMail = User.GetUserMail();
-            var appUser = await _userManager.FindByEmailAsync(userMail);
-
-            if (appUser == null) return Unauthorized();
-
-            List<Review> reviews = new List<Review>();
-
-            if (await _workerRepo.IsWorkerExistsAsync(appUser.Id.ToString()))
-            {
-                reviews = await _reviewRepo.GetWorkersReviewsAsync(appUser.Id.ToString());
-            }
-            else if (await _customerRepo.IsCustomerExistsAsync(appUser.Id.ToString()))
-            {
-                reviews = await _reviewRepo.GetReviewsForWriterAsync(appUser.Id.ToString());
-            }
-            else
-            {
-                return BadRequest();
-            }
-
-            List<ReviewDto> reviewDtoList = new List<ReviewDto>();
-
-            if (reviews != null && reviews.Count > 0)
-            {
-                foreach (var review in reviews)
-                {
-                    reviewDtoList.Add(review.ToReviewDto());
-                }
-            }
-
-            return Ok(reviewDtoList);
-        }
 
         [HttpPost]
         [Authorize(Roles = "Customer")]
@@ -128,18 +90,21 @@ namespace ApplicationLLA.Server.Controllers
                 return StatusCode(403);
             }
 
-
             if ((await _reviewRepo.CheckExistsAsync(appUser.Id.ToString(), createReviewDto.ReservationId)))
             {
                 return Ok("Review Already Exists");
             }
 
+            var postId = await _reservationRepo.GetPostIdFromReservation(createReviewDto.ReservationId);
+
+            var workerId = await _postRepo.GetWorkerIdFromPost(postId);
+            if(workerId == null) { return StatusCode(500); }
 
             var reservationStatus = await _reservationRepo.GetReservationStatusById(createReviewDto.ReservationId);
 
             if (reservationStatus == "Done")
             {
-                var createReview = await _reviewRepo.CreateReviewAsync(createReviewDto.ToReviewFromCreateDto(appUser.Id.ToString()));
+                var createReview = await _reviewRepo.CreateReviewAsync(createReviewDto.ToReviewFromCreateDto(appUser.Id, workerId));
 
                 if (createReview == null) { return StatusCode(500); }
 

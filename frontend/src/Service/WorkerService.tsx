@@ -13,6 +13,7 @@ export const WorkerGetAPI = async () => {
     }
 };
 
+
 export const WorkerPutAPI = async (workerData: WorkerPUT) => {
     try {
         const response = await axios.put<AxiosResponse>(api + 'Worker', workerData);

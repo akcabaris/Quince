@@ -15,5 +15,6 @@ namespace ApplicationLLA.Server.Interfaces
         Task<Post?> UpdateAsync(int id, Post postModel);
         Task<Post?> DeleteAsync(int id);
         Task<int> GetCountPostOfCategoryAsync(string category);
+        Task<string?> GetWorkerIdFromPost(int postId);
     }
 }

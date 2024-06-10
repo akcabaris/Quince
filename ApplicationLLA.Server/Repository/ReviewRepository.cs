@@ -50,5 +50,31 @@ namespace ApplicationLLA.Server.Repository
             return true;
 
         }
+
+        public async Task<Review?> GetReviewForReservationAsync(int reservationId)
+        {
+            return await _context.Reviews.FirstOrDefaultAsync(r => r.reservationId == reservationId);
+        }
+
+        public async Task<double?> GetWorkersReviewScore(string workerId)
+        {
+            var reviews = await _context.Reviews.Where(r => r.ReviewToUserId == workerId).ToListAsync();
+
+            if(!reviews.Any())
+            {
+                return null;
+            }
+
+            var score = reviews.Average(r => r.ReviewScore);
+
+            if (score < 1)
+            {
+                return null;
+            }
+
+            return score;
+        }
+
+
     }
 }

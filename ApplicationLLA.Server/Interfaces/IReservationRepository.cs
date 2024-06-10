@@ -13,5 +13,6 @@ namespace ApplicationLLA.Server.Interfaces
         Task<string> GetReservationStatus(string customerId, int postId);
         Task<string> GetReservationStatusById(int reservation);
         Task <bool> CheckIsReservationExists(string userId, int postId);
+        Task<int> GetPostIdFromReservation(int reservationId);
     }
 }

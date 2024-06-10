@@ -23,14 +23,16 @@ namespace ApplicationLLA.Server.Controllers
         private readonly ICustomerRepository _customerRepo;
         private readonly IWorkerRepository _workerRepo;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IReviewRepository _reviewRepo;
 
-        public ReservationController(IReservationRepository reservRepo, IPostRepository postRepo, UserManager<AppUser> userManager, ICustomerRepository customerRepo, IWorkerRepository workerRepo)
+        public ReservationController(IReservationRepository reservRepo, IPostRepository postRepo, UserManager<AppUser> userManager, ICustomerRepository customerRepo, IWorkerRepository workerRepo, IReviewRepository reviewRepo)
         {
             _reservRepo = reservRepo;
             _postRepo = postRepo;
             _userManager = userManager;
             _customerRepo = customerRepo;
             _workerRepo = workerRepo;
+            _reviewRepo = reviewRepo;
         }
 
         [HttpPost]
@@ -68,7 +70,6 @@ namespace ApplicationLLA.Server.Controllers
 
 
             await _reservRepo.CreateAsync(reservModel);
-
             return NoContent();
         }
 
@@ -107,7 +108,7 @@ namespace ApplicationLLA.Server.Controllers
             {
                 var reservModel = await _reservRepo.DeleteAsync(id);
                 if (reservModel == null) return NotFound();
-                return Ok();
+                return NoContent();
             }
             else
             {
@@ -153,9 +154,17 @@ namespace ApplicationLLA.Server.Controllers
 
                     if (worker != null && worker.FullName != null)
                     {
-                        reservationDtoList.Add(reservation.ToUserReservationDto(post.ToPostDto(worker.FullName, worker.PictureLink)));
+                        var review = await _reviewRepo.GetReviewForReservationAsync(reservation.ReservationId);
+
+                        var userScore = await _reviewRepo.GetWorkersReviewScore(worker.AppUserId.ToString());
+                        reservationDtoList.Add(reservation.ToUserReservationDto(post.ToPostDto(worker.FullName, worker.PictureLink, userScore), review?.ToReviewDto()));
+
                     }
+
+
                 }
+
+                
             }
 
             return Ok(reservationDtoList);

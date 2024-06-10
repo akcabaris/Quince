@@ -143,6 +143,14 @@ namespace ApplicationLLA.Server.Repository
             return userPostList;
         }
 
+        public async Task<string?> GetWorkerIdFromPost(int postId)
+        {
+
+            var post = await _context.Posts.FindAsync(postId);
+            if(post == null) { return null; }
+            return post.WorkerId;
+        }
+
         public async Task<Post?> UpdateAsync(int id, Post postModel)
         {
             var existingPost = await _context.Posts.FindAsync(id);

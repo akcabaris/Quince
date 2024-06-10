@@ -6,8 +6,9 @@ namespace ApplicationLLA.Server.Interfaces
     {
         Task<Review?> CreateReviewAsync(Review reviewModel);
         Task<bool> CheckExistsAsync(string writerUserId, int reservationId);
-        Task<List<Review>> GetReviewsForWriterAsync(string writerUserId);
+        Task<Review?> GetReviewForReservationAsync(int reservationId);
         Task<List<Review>> GetWorkersReviewsAsync(string userId);
         Task<bool> DeleteAsync(int reviewId);
+        Task<double?> GetWorkersReviewScore(string workerId);
     }
 }

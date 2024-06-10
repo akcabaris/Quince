@@ -18,12 +18,12 @@ namespace ApplicationLLA.Server.Mappers
             };
         }
 
-        public static Review ToReviewFromCreateDto(this CreateReviewDto review, string writerUserId)
+        public static Review ToReviewFromCreateDto(this CreateReviewDto review, string writerUserId, string toUserId)
         {
             return new Review
             {
                 ReviewText = review.ReviewText,
-                ReviewToUserId = review.ReviewToUserId,
+                ReviewToUserId = toUserId,
                 ReviewWriterUserId = writerUserId,
                 ReviewScore = review.ReviewScore,
                 reservationId = review.ReservationId,
