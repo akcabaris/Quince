@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationLLA.Server.Dtos.Worker;
 using ApplicationLLA.Server.Service;
+using ApplicationLLA.Server.Dtos.Review;
 
 namespace ApplicationLLA.Server.Controllers
 {
@@ -18,12 +19,14 @@ namespace ApplicationLLA.Server.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IWorkerRepository _workerRepo;
         private readonly IFileService _fileService;
+        private readonly IReviewRepository _reviewRepo;
 
-        public WorkerController(UserManager<AppUser> userManager, IWorkerRepository workerRepo, IFileService fileService)
+        public WorkerController(UserManager<AppUser> userManager, IWorkerRepository workerRepo, IFileService fileService, IReviewRepository reviewRepo)
         {
             _userManager = userManager;
             _workerRepo = workerRepo;
             _fileService = fileService;
+            _reviewRepo = reviewRepo;
         }
 
 
@@ -113,11 +116,11 @@ namespace ApplicationLLA.Server.Controllers
                 createdImageName = await _fileService.SaveFileAsync(updateDto.ImageFile, allowedFileExtentions);
             }
 
-            if(createdImageName == null) { return BadRequest(); }
+            if (createdImageName == null) { return BadRequest(); }
             var workerModel = await _workerRepo.UpdateProfilePicAsync(worker.AppUserId, createdImageName);
             if (workerModel == null) return BadRequest();
 
-            if (updateDto.ImageFile != null && oldImage !=null)
+            if (updateDto.ImageFile != null && oldImage != null)
                 _fileService.DeleteFile(oldImage);
 
             return Ok();
@@ -160,7 +163,7 @@ namespace ApplicationLLA.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetWorkerPublic([FromBody] string workerId)
+        public async Task<IActionResult> GetWorkerPublic(string workerId)
         {
             if (!ModelState.IsValid)
             {
@@ -172,9 +175,21 @@ namespace ApplicationLLA.Server.Controllers
 
             if (worker == null) { return BadRequest(); }
 
-            var workerDto = worker.ToWorkerDto();
+            var score = await _reviewRepo.GetWorkersReviewScore(workerId);
 
-            return Ok(workerDto);
+            var reviews = await _reviewRepo.GetWorkersReviewsAsync(workerId);
+
+            List<ReviewDto> reviewDtoList = new List<ReviewDto>();
+
+            if (reviews != null)
+            {
+                foreach (var review in reviews)
+                {
+                    reviewDtoList.Add(review.ToReviewDto());
+                }
+            }
+
+            return Ok(worker.ToPublicWorkerDto(reviewDtoList, score));
 
         }
 

@@ -1,6 +1,6 @@
 import axios, { Axios, AxiosResponse } from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
-import { WorkerGET, WorkerPUT } from "../Models/Worker";
+import { WorkerGET, WorkerPUT, WorkerPublicGET } from "../Models/Worker";
 
 const api = "http://localhost:5279/api/";
 
@@ -12,6 +12,16 @@ export const WorkerGetAPI = async () => {
         handleError(error);
     }
 };
+
+export const WorkerGetPublicAPI = async (workerId: string) => {
+    try {
+        const response = await axios.get<WorkerPublicGET>(api +"Worker/GetPublic?workerId="+ workerId);
+        return response;
+    } catch (error) {
+        console.error('Error fetching worker public data:', error);
+        throw error;
+    }
+}
 
 
 export const WorkerPutAPI = async (workerData: WorkerPUT) => {

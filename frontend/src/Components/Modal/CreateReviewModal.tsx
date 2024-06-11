@@ -38,6 +38,7 @@ const CreateReviewModal = ({ onClose, reservationId, handleUpdate }: Props) => {
         }
         onClose();
         reset();
+        handleUpdate();
     };
 
     const handleCancel = () => {

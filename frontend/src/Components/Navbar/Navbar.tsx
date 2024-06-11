@@ -67,7 +67,7 @@ const Navbar = (props: Props) => {
 
             </>
           ) : (<>
-            <div className='hidden lg:flex'>
+            <div className='hidden md:flex'>
               {
                 NotLoggedInItems.map((item, index) => (
                   <NavbarItem
@@ -80,7 +80,7 @@ const Navbar = (props: Props) => {
               }
 
             </div>
-            <div className='flex lg:hidden'>
+            <div className='flex md:hidden'>
               <Dropdown items={NotLoggedInItems} logout={logout} isLoggedIn={isLoggedIn()} />
             </div>
           </>

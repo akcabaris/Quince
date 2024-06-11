@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PostGet } from '../../Models/Post';
-import { FaAnglesDown } from "react-icons/fa6";
+import { FaAnglesDown, FaBullseye } from "react-icons/fa6";
 import { FaAnglesUp } from "react-icons/fa6";
 import { useAuth } from '../../Context/useAuth';
 import * as Yup from "yup";
@@ -16,6 +16,7 @@ import { Navigate, useNavigate } from 'react-router';
 import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import InspectWorkerModal from '../Modal/InspectWorkerModal';
 
 interface Props {
   postValue: PostGet;
@@ -32,7 +33,8 @@ type createReservationInputs = {
 
 const SquarishPost = ({ postValue, isOpen, onToggle }: Props) => {
   const { user } = useAuth();
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [showReservationModal, setShowReservationModal] = useState(false);
+  const [showWorkerPublicModal, setShowWorkerPublicModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [reservationNote, setReservationNote] = useState<string>("");
   const [isDateNull, setIsDateNull] = useState<boolean>(false);
@@ -50,10 +52,10 @@ const SquarishPost = ({ postValue, isOpen, onToggle }: Props) => {
         const response = await CreateReservationAPI(postValue.postId, selectedDate, reservationNote);
         if (response) {
           if (response.status == 204) {
-            setModalIsOpen(false);
+            setShowReservationModal(false);
             await toast.success("Reservation Is successful");
           } else if (response.status == 200) {
-            setModalIsOpen(false);
+            setShowReservationModal(false);
             toast.warn(response.data.toString())
           }
         }
@@ -90,20 +92,24 @@ const SquarishPost = ({ postValue, isOpen, onToggle }: Props) => {
 
 
   const openModal = () => {
-    setModalIsOpen(true);
+    setShowReservationModal(true);
   };
 
   const closeModal = () => {
     setSelectedDate(null);
     setReservationNote("");
-    setModalIsOpen(false);
+    setShowReservationModal(false);
   };
-
 
   const today = new Date().toISOString().split('T')[0];
 
-  const renderStars = (score: number) => {
+  const renderStars = (score: number | null) => {
     const stars = [];
+    if(score == null ){
+      for (let i = 1; i <= 5; i++){
+        stars.push(<StarBorderIcon fontSize='large' className="text-gray-300" />)
+      };
+    } else{
     for (let i = 1; i <= 5; i++) {
       if (i <= score) {
         stars.push(<StarIcon key={i} fontSize='large' className="text-yellow-300" />);
@@ -117,16 +123,21 @@ const SquarishPost = ({ postValue, isOpen, onToggle }: Props) => {
       else {
         stars.push(<StarBorderIcon key={i} fontSize='large' className="text-gray-300" />);
       }
-    }
+    }}
     return stars;
   };
 
   return (
-    <div className="rounded-lg pb-2 px-2 md:mx-3 my-6 bg-gradi cursor-pointer border-spacing-2 shadow-blue-100/50 relative shadow-xl border max-w-180 min-h-48">
+    <>
+    {
+      showWorkerPublicModal ? <InspectWorkerModal key={postValue.workerId} onClose={() => setShowWorkerPublicModal(false)} workerId={postValue.workerId} /> : <></>
+     
+    }
+    <div className="rounded-lg pb-2 px-2 md:mx-3 my-6 cursor-pointer border-spacing-2 shadow-blue-100/50 relative shadow-xl border max-w-180 min-h-48">
       <div className="flex justify-between mt-4 w-full bg-slate-50 items-center rounded-md shadow-md opacity-80 relative">
         <div className="flex items-center">
           <img className='w-12 items-center rounded-lg' src={postValue.pictureLink === "http://localhost:5279/resources/" ? "/img/profile.png" : postValue.pictureLink} alt="" />
-          <p className='px-1 items-center font-serif text-md text-darkBlue'>{postValue.workerName} </p>
+          <p className='px-1 items-center font-serif text-md text-darkBlue hover:opacity-85' onClick={() => setShowWorkerPublicModal(true)} title='Click for inspecting to User?'>{postValue.workerName} </p>
         </div>
         {user?.accountType == "Customer" || user?.accountType == "Worker" ? (
 
@@ -178,7 +189,7 @@ const SquarishPost = ({ postValue, isOpen, onToggle }: Props) => {
                 Make a Reservation
               </button>
             </div>
-            {modalIsOpen && (
+            {showReservationModal && (
               <div className="fixed inset-0 flex items-center justify-center z-50 px-2">
                 <div className="absolute inset-0 bg-black opacity-50"></div>
                 <div className="bg-white p-8 rounded shadow-lg z-10">
@@ -219,6 +230,7 @@ const SquarishPost = ({ postValue, isOpen, onToggle }: Props) => {
         )
       }
     </div>
+    </>
   );
 }
 

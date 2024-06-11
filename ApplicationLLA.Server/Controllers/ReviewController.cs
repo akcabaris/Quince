@@ -116,5 +116,36 @@ namespace ApplicationLLA.Server.Controllers
             }
         }
 
+
+        [HttpGet("GetReviewsForProfile")]
+        [Authorize(Roles = "Worker")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetReviewsForProfile()
+        {
+            if (!ModelState.IsValid) { return BadRequest(); }
+
+            var userMail = User.GetUserMail();
+            var appUser = await _userManager.FindByEmailAsync(userMail);
+
+            if (appUser == null) return Unauthorized();
+
+            if (!(await _workerRepo.IsWorkerExistsAsync(appUser.Id))) { return BadRequest("Worker does not exists"); }
+
+            var reviews = await _reviewRepo.GetWorkersReviewsAsync(appUser.Id);
+
+            List<ReviewDto> reviewDtoList = new List<ReviewDto>();
+
+            if (reviews != null)
+            {
+                foreach (var review in reviews)
+                {
+                    reviewDtoList.Add(review.ToReviewDto());
+                }
+            }
+
+            return Ok(reviewDtoList);
+
+        }
+
     }
 }

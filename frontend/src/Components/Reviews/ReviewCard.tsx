@@ -8,21 +8,20 @@ type Props = {
 
 const ReviewCard = ({ review }: Props) => {
     return (
-        <div className="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4">
+        <div className="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-md flex items-center my-2 space-x-4">
             <div>
                 <div className="text-lg font-medium text-start">
                     {
                         Array.from({ length: 5 }, (_, i) => (
-                            <StarIcon className={`${i < review.reviewScore ? "text-yellow-300" : "text-gray-300"}`} />
+                            <StarIcon key={i} className={`${i < review.reviewScore ? "text-yellow-300" : "text-gray-300"}`} />
                         ))
                     }
                 </div>
-                <p className="mt-2 text-gray-500 text-start text-base">
+                <p className="mt-2 text-gray-500 text-start text-base break-all">
                     {review.reviewText}
                 </p>
             </div>
         </div>
-
     )
 }
 

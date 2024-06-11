@@ -65,9 +65,9 @@ namespace ApplicationLLA.Server.Repository
                 return null;
             }
 
-            var score = reviews.Average(r => r.ReviewScore);
+            double? score = reviews.Average(r => r.ReviewScore);
 
-            if (score < 1)
+            if (score < 1 || score == null)
             {
                 return null;
             }

@@ -10,7 +10,7 @@ type Props = {
 const NavbarItem = ({to, text, Icon}: Props) => {
   return (
     <Link to={to} className="flex items-center mr-6 text-black no-underline hover:text-green-800" replace={true}>
-        {Icon && <Icon className="hidden"></Icon>}
+        {Icon && <Icon className=""></Icon>}
         <p>{text}</p>
   </Link>
   )

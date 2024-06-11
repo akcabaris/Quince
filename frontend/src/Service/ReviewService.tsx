@@ -22,3 +22,12 @@ export const GetReviewsAPI = async (workerId: string) => {
         handleError(error);
     }
 }
+
+export const GetAccountReviewsAPI = async () => {
+    try {
+        const response = await axios.get<ReviewGET[]>(api+"/Review/GetReviewsForProfile");
+        return response;
+    } catch(error){
+        handleError(error);
+    }
+}

@@ -1,4 +1,5 @@
-﻿using ApplicationLLA.Server.Dtos.Worker;
+﻿using ApplicationLLA.Server.Dtos.Review;
+using ApplicationLLA.Server.Dtos.Worker;
 using ApplicationLLA.Server.Models;
 
 namespace ApplicationLLA.Server.Mappers
@@ -29,6 +30,21 @@ namespace ApplicationLLA.Server.Mappers
                 BirthDate = workerDto.BirthDate,
                 Description = workerDto.Description,
                 Occupation = workerDto.Occupation,
+            };
+        }
+        public static PublicWorkerDto ToPublicWorkerDto(this Worker worker, List<ReviewDto> reviewDtoList, double? reviewScore)
+        {
+            return new PublicWorkerDto
+            {
+                WorkerId = worker.AppUserId,
+                FullName = worker.FullName,
+                PictureLink = "http://localhost:5279/resources/" + worker.PictureLink,
+                PhoneNumber = worker.PhoneNumber,
+                Description = worker.Description,
+                BirthDate = worker.BirthDate,
+                Occupation = worker.Occupation,
+                ReviewScore = reviewScore,
+                ReviewList = reviewDtoList,
             };
         }
 
