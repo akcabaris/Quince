@@ -20,12 +20,13 @@ type Props = {
 
 const validation = Yup.object().shape({
   category: Yup.string().required("Category is required"),
-  title: Yup.string().required("Title is required"),
-  description: Yup.string().required("Description is required"),
+  title: Yup.string().required("Title is required").transform((value) => value.replace(/\s+/g, ' ').trim()),
+  description: Yup.string().required("Description is required").transform((value) => value.replace(/\s+/g, ' ').trim()),
   price: Yup.number().required("Price is required"),
   priceCurrency: Yup.string().required("Currency is required"),
   priceWorkUnit: Yup.string().required("Work unit is required"),
 });
+
 
 const AddPostModal = ({ onClose, handleGetUserPosts }: Props) => {
   const [city, setCity] = useState<string>("");

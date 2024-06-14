@@ -40,6 +40,8 @@ namespace ApplicationLLA.Server.Controllers
         [Authorize(Roles = "Customer")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromRoute] int postId, CreateReservationDto reservDto)
         {
@@ -52,11 +54,26 @@ namespace ApplicationLLA.Server.Controllers
                 return BadRequest("User does not exists");
             }
 
+            // Users cannot send unsuitable date values from the application interface
+            // This is a safeguard against altering date values with other tools
+            var minDate = DateTime.Today;
+            var maxDate = DateTime.Today.AddYears(5);
+            if(reservDto.ReservationDate < minDate || reservDto.ReservationDate > maxDate)
+            {
+                
+                return BadRequest($"DateTime is not valid, it should be between {minDate:dd/MM/yyyy} and {maxDate:dd/MM/yyyy}");
+            }
+
             var customer = await _customerRepo.GetByUserIdAsync(appUSer.Id.ToString());
 
             if (customer == null)
             {
-                return BadRequest("Worker does not exists");
+                return BadRequest("Customer does not exists");
+            }
+
+            if (customer.FullName.Length == 0 || customer.FullName == null)
+            {
+                return NoContent();
             }
 
             var post = await _postRepo.GetPostByIdAsync(postId);
@@ -69,8 +86,8 @@ namespace ApplicationLLA.Server.Controllers
             var reservModel = reservDto.ToReservationFromCreate(postId, customer.AppUserId);
 
 
-            await _reservRepo.CreateAsync(reservModel);
-            return NoContent();
+            var result = await _reservRepo.CreateAsync(reservModel);
+            return StatusCode(201);
         }
 
         [HttpDelete]
@@ -104,7 +121,7 @@ namespace ApplicationLLA.Server.Controllers
             }
 
             var reservationStatus = await _reservRepo.GetReservationStatusById(id);
-            if(reservationStatus == "Waiting" || reservationStatus == "Denied")
+            if (reservationStatus == "Waiting" || reservationStatus == "Denied")
             {
                 var reservModel = await _reservRepo.DeleteAsync(id);
                 if (reservModel == null) return NotFound();
@@ -164,7 +181,7 @@ namespace ApplicationLLA.Server.Controllers
 
                 }
 
-                
+
             }
 
             return Ok(reservationDtoList);

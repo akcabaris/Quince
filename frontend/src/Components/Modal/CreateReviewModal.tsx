@@ -15,7 +15,7 @@ type Props = {
 }
 
 const validation = Yup.object().shape({
-    reviewText: Yup.string().required("Review Text is required").min(10, "At least 10 Character.").max(240, "Max 200 Character."),
+    reviewText: Yup.string().required("Review Text is required").min(10, "At least 10 Character.").max(240, "Max 200 Character.").transform((value) => value.replace(/\s+/g, ' ').trim()),
     reviewScore: Yup.number().required("Review Score is required").min(1, "").max(5, ""),
     reservationId: Yup.number().required()
 });

@@ -21,7 +21,8 @@ const validation = Yup.object().shape({
     content: Yup.string()
         .required('')
         .min(1)
-        .max(300),
+        .max(300)
+        .transform((value) => value.replace(/\s+/g, ' ').trim()),
 });
 
 const MessagesPage: React.FC<Props> = () => {
