@@ -13,6 +13,9 @@ import ReviewsPage from "../Pages/UsersPage/ReviewsPage";
 import WorkerDetails from "../Pages/UsersPage/WorkerDetails";
 import WorkerPostsPage from "../Pages/PostPages/WorkerPostsPage";
 import CustomerReservationsPage from "../Pages/UsersPage/CustomerReservationsPage";
+import NotFoundPage from "../Pages/Help/NotFoundPage";
+
+
 
 export const router = createBrowserRouter([
     {
@@ -50,6 +53,8 @@ export const router = createBrowserRouter([
                 )
             },
 
+
         ]
-    }
+    },
+    { path: "*", element: <NotFoundPage /> },
 ])

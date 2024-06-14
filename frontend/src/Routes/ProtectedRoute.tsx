@@ -24,7 +24,7 @@ const ProtectedRouteWorker = ({ children }: Props) => {
   }
 
   if (user != null && user.accountType !== 'Worker') {
-    return <Navigate to="/unauthorized" replace={true} />;
+    return <Navigate to="/" replace={true} />;
   }
 
   return <>{children}</>;

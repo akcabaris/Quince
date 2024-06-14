@@ -36,6 +36,8 @@ const CustomerDetails = (props: Props) => {
       handleError(error);
     }
     setIsButtonDisabled(true);
+    handleGetCustomer();
+    reset();
     setTimeout(() => setIsButtonDisabled(false), 1500);
   };
 
@@ -115,6 +117,7 @@ const CustomerDetails = (props: Props) => {
   const validation = Yup.object().shape({
     fullName: Yup.string().default(customer?.fullName).required("Full Name is required")
       .min(3, "Too short name")
+      .transform((value) => value.replace(/\s+/g, ' ').trim())
       .max(50, "Max length can be 50 characters"),
     phoneNumber: Yup.number().typeError("Format must be like 5XXXXXXXXX")
       .required("Phone number is required").default(customer?.phoneNumber)
@@ -126,7 +129,7 @@ const CustomerDetails = (props: Props) => {
       .min(4)
       .max(30),
   });
-  const { register, handleSubmit, formState: { errors } } = useForm<CustomerPUT>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<CustomerPUT>({
     resolver: yupResolver(validation)
   });
 

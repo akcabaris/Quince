@@ -40,6 +40,8 @@ const WorkerDetails = ({ }: Props) => {
             toast.warn("Failed to update account information.")
         }
         setIsButtonDisabled(true);
+        handleGetWorker();
+        reset();
         setTimeout(() => setIsButtonDisabled(false), 1500);
     };
     
@@ -117,7 +119,8 @@ const WorkerDetails = ({ }: Props) => {
     const validation = Yup.object().shape({
         fullName: Yup.string().required("Full Name is required").default(worker?.fullName)
             .min(3, "Too short name")
-            .max(50, "Max length can be 50 characters"),
+            .max(50, "Max length can be 50 characters")
+            .transform((value) => value.replace(/\s+/g, ' ').trim()),
         phoneNumber: Yup.number().typeError("Format must be like 5XXXXXXXXX")
         .required("Phone number is required").default(worker?.phoneNumber)
         .test('is-starting-with-5', 'Phone number must start with 5', (value) => {
@@ -127,12 +130,14 @@ const WorkerDetails = ({ }: Props) => {
         }),
         occupation: Yup.string().required("Occupation is required").default(worker?.occupation)
             .min(4)
-            .max(30),
+            .max(30)
+            .transform((value) => value.replace(/\s+/g, ' ').trim()),
         description: Yup.string().required("Description can't be empty").default(worker?.description)
             .min(10, "At least 20 characters")
-            .max(2000, "Max 2000 characters"),
+            .max(2000, "Max 2000 characters")
+            .transform((value) => value.replace(/\s+/g, ' ').trim()),
     });
-    const { register, handleSubmit, formState: { errors } } = useForm<WorkerPUT>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<WorkerPUT>({
         resolver: yupResolver(validation)
     });
 

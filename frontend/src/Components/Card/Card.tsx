@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchIcon from '@mui/icons-material/Search';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 
 interface Props {
   name: string;
@@ -16,7 +17,7 @@ const Card: React.FC<Props> = ({ name, imgUrl, countOfSearch, countOfPost }) => 
       <div className='border   rounded-md'><img src={imgUrl} alt="" className='border rounded' /></div>
       <div className="text-center pb-1 flex overflow-clip justify-evenly text-sm text-gray-500 text-wrap">
         <p className='justify-start font-sans'><SearchIcon /> {countOfSearch}</p>
-        <p className='justify-end font-sans'>{countOfPost} post</p>
+        <p className='justify-end font-sans'><ListAltIcon /> {countOfPost}</p>
       </div>
     </div>
   );

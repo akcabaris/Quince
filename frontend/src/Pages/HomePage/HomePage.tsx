@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { handleError } from '../../Helpers/ErrorHandler';
 import { BsSearch } from "react-icons/bs";
 import { QualityTileData } from '../../Data';
-import Tiles from '../../Components/Card/Card';
-import TileWithDescription from '../../Components/Card/CardWithDescription';
+import Card from '../../Components/Card/Card';
+import CardWithDescription from '../../Components/Card/CardWithDescription';
 import { Category } from '../../Models/Category';
 import { GetCategoriesAPI } from '../../Service/CategoryService';
+
 
 
 type Props = {};
@@ -65,12 +66,12 @@ useEffect(() => {
         The easiest way to obtain the service you desire is to simply search for what you need.
         </h1>
       </div>
-      <div className="flex rounded-md overflow-hidden border max-w-180 items-center mt-3 w-1/2 mx-auto">
+      <div className="flex rounded-md overflow-hidden border max-w-180 items-center w-full md:w-1/2 mx-auto h-16">
       
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full border-cyan-700 rounded-md px-4"
+          className="w-full border-cyan-700 rounded-md px-4 h-full"
         >
           <option value="">All Categories</option>
           {categoryList && categoryList.map((category, index) => (
@@ -81,7 +82,7 @@ useEffect(() => {
         </select>
         <button
           onClick={handleClick}
-          className="bg-indigo-600 text-white px-6 text-lg font-semibold py-4 rounded-r-md"
+          className="bg-indigo-600 text-white px-6 h-16 text-lg font-semibold rounded-r-md"
         >
           <BsSearch />
         </button>
@@ -93,14 +94,14 @@ useEffect(() => {
       {trendCategories != null && trendCategories.map((category, index) => (
       <div key={index} className="p-2 border rounded-md cursor-pointer text-xl hover:bg-gray-100 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
        onClick={() => handleTileClick(category.categoryName)}>
-          <Tiles name={category.categoryName} imgUrl={category.pictureLink} countOfSearch={category.countOfSearch} countOfPost={category.countOfPost}/>
+          <Card name={category.categoryName} imgUrl={category.pictureLink} countOfSearch={category.countOfSearch} countOfPost={category.countOfPost}/>
         </div>
       ))}
     </div>
     <div className="flex flex-col lg:grid lg:grid-cols-4 gap-4 pt-32 w-full text-xl ">
     {QualityTileData != null && QualityTileData.map((tile, index) => (
-      <div key={index} className="p-4 cursor-pointer">
-          <TileWithDescription name={tile.id} imgUrl={tile.url} description={tile.caption} />
+      <div key={index} className="p-4">
+          <CardWithDescription name={tile.id} imgUrl={tile.url} description={tile.caption} />
         </div>
       ))}
     </div>
