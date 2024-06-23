@@ -15,6 +15,12 @@ namespace ApplicationLLA.Server.Repository
         }
         public async Task<Category[]> GetCategoriesAsync() => await _context.Categories.ToArrayAsync();
 
+        public async Task<List<string>> GetCategoryNamesForCheck()
+        {
+            return await _context.Categories.Select(c => c.CategoryName).ToListAsync();
+        }
+
+
         public async Task<bool> IncrementCountOfSearchAsync(string categoryName)
         {
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);

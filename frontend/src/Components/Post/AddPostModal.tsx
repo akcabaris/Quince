@@ -20,8 +20,8 @@ type Props = {
 
 const validation = Yup.object().shape({
   category: Yup.string().required("Category is required"),
-  title: Yup.string().required("Title is required").transform((value) => value.replace(/\s+/g, ' ').trim()),
-  description: Yup.string().required("Description is required").transform((value) => value.replace(/\s+/g, ' ').trim()),
+  title: Yup.string().required("Title is required").transform((value) => value.replace(/\s+/g, ' ').trim()).min(15,"Min 15 Character").max(120,"Max 120 Character"),
+  description: Yup.string().required("Description is required").transform((value) => value.replace(/\s+/g, ' ').trim()).min(20,"Min 20 Character").max(2000,"Max 2000 Character"),
   price: Yup.number().required("Price is required"),
   priceCurrency: Yup.string().required("Currency is required"),
   priceWorkUnit: Yup.string().required("Work unit is required"),

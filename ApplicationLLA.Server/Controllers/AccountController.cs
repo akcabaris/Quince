@@ -1,5 +1,6 @@
 ﻿using ApplicationLLA.Server.DBC;
 using ApplicationLLA.Server.Dtos.Account;
+using ApplicationLLA.Server.Helper;
 using ApplicationLLA.Server.Interfaces;
 using ApplicationLLA.Server.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -76,6 +77,9 @@ namespace ApplicationLLA.Server.Controllers
         {
             try
             {
+                registerDto.Email = registerDto.Email.HandleSpaces();
+                registerDto.Username = registerDto.Username.HandleSpaces();
+                registerDto.Password = registerDto.Password.HandleSpaces();
 
                 if (registerDto == null) return BadRequest("Register Object is not valid");
 

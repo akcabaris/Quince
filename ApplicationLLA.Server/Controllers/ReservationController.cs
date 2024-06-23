@@ -1,5 +1,6 @@
 ﻿using ApplicationLLA.Server.Dtos.Reservation;
 using ApplicationLLA.Server.Extensions;
+using ApplicationLLA.Server.Helper;
 using ApplicationLLA.Server.Interfaces;
 using ApplicationLLA.Server.Mappers;
 using ApplicationLLA.Server.Models;
@@ -83,6 +84,8 @@ namespace ApplicationLLA.Server.Controllers
             if (await _reservRepo.CheckIsReservationExists(appUSer.Id, postId))
                 return Ok("Reservation Already Exists");
 
+
+            reservDto.ReservationNote = reservDto.ReservationNote.HandleSpaces();
             var reservModel = reservDto.ToReservationFromCreate(postId, customer.AppUserId);
 
 

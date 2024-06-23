@@ -1,5 +1,6 @@
 ﻿using ApplicationLLA.Server.Dtos.Review;
 using ApplicationLLA.Server.Extensions;
+using ApplicationLLA.Server.Helper;
 using ApplicationLLA.Server.Interfaces;
 using ApplicationLLA.Server.Mappers;
 using ApplicationLLA.Server.Models;
@@ -83,6 +84,7 @@ namespace ApplicationLLA.Server.Controllers
             {
                 return Unauthorized();
             }
+            if(createReviewDto == null) {  return BadRequest(); }
 
             // check the owner of the reservation
             if (!(await _reservationRepo.CheckIsOwnerRight(appUser.Id, createReviewDto.ReservationId)))
@@ -104,6 +106,7 @@ namespace ApplicationLLA.Server.Controllers
 
             if (reservationStatus == "Done")
             {
+                createReviewDto.ReviewText = createReviewDto.ReviewText.HandleSpaces();
                 var createReview = await _reviewRepo.CreateReviewAsync(createReviewDto.ToReviewFromCreateDto(appUser.Id, workerId));
 
                 if (createReview == null) { return StatusCode(500); }

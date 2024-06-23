@@ -1,5 +1,6 @@
 ﻿using ApplicationLLA.Server.Dtos.Message;
 using ApplicationLLA.Server.Extensions;
+using ApplicationLLA.Server.Helper;
 using ApplicationLLA.Server.Interfaces;
 using ApplicationLLA.Server.Mappers;
 using ApplicationLLA.Server.Models;
@@ -70,6 +71,7 @@ namespace ApplicationLLA.Server.Controllers
                 { receiverId = conversationModel.SecondUserId.ToString(); }
             else { receiverId = conversationModel.FirstUserId.ToString(); }
 
+            createMessageDto.Content = createMessageDto.Content.HandleSpaces();
 
             var messageModel = createMessageDto.ToMessageFromCreateDto(conversationModel,appUser.Id.ToString(),receiverId);
 

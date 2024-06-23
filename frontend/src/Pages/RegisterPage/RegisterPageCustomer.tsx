@@ -21,9 +21,10 @@ const validation = Yup.object().shape({
   .required("Email is required")
   .email("invalid email address")
   .lowercase()
-  .min(3, "it's too short"),
-  userName: Yup.string().required("Username is required").lowercase().matches(/^[^\s]+$/, "You can't use space character for this"),
-  password: Yup.string().required("Password is required").min(12, 'Password to short')
+  .min(5, "it's too short")
+  .max(50,"Max 50 Character"),
+  userName: Yup.string().required("Username is required").lowercase().matches(/^[^\s]+$/, "You can't use space character for this").min(6,"Min 6 Character"),
+  password: Yup.string().required("Password is required").min(12, 'Password to short').max(20, "Max 20 Character")
   .matches(/^(?=.*[a-z])/, 'Must contain at least one lowercase character')
   .matches(/^(?=.*[A-Z])/, 'Must contain at least one uppercase character')
   .matches(/^(?=.*[0-9])/, 'Must contain at least one number')

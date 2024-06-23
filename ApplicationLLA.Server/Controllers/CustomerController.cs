@@ -1,5 +1,7 @@
 ﻿using ApplicationLLA.Server.Dtos.Customer;
+using ApplicationLLA.Server.Dtos.Worker;
 using ApplicationLLA.Server.Extensions;
+using ApplicationLLA.Server.Helper;
 using ApplicationLLA.Server.Interfaces;
 using ApplicationLLA.Server.Mappers;
 using ApplicationLLA.Server.Models;
@@ -67,12 +69,30 @@ namespace ApplicationLLA.Server.Controllers
 
             if (appUser == null) return BadRequest();
 
+            if (customerDto == null) { return BadRequest(); }
+
+            customerDto.FullName = customerDto.FullName.HandleSpaces();
+
+            if(customerDto.Gender != null && customerDto.Gender.IsGenderValueValid())
+            {
+                customerDto.Gender = customerDto.Gender?.HandleSpaces();
+            }
+            else if(customerDto.Gender != null && (!customerDto.Gender.IsGenderValueValid()))
+            {
+                return BadRequest();
+            }
+
+            // For now i just accept like the 5XXXXXXXXX phone numbers
+            if (!customerDto.PhoneNumber.IsPhoneNumberValidFormatTR())
+            {
+                return BadRequest();
+            }
+
             var customer = await _customerRepo.GetByUserIdAsync(appUser.Id);
 
             if (customer == null) return BadRequest();
             customerDto.ToCustomerFromUpdate(customer.AppUserId.ToString());
 
-            if (customerDto == null) { return BadRequest(); }
             var customerModel = await _customerRepo.UpdateAsync(customer.AppUserId, customerDto);
 
             if (customerModel == null) return BadRequest();

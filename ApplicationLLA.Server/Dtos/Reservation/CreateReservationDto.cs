@@ -7,6 +7,5 @@ namespace ApplicationLLA.Server.Dtos.Reservation
         public required DateTime ReservationDate { get; set; }
         [MaxLength(200)]
         public required string ReservationNote { get; set; } = string.Empty;
-        public required string CustomerPictureLink { get; set; } = string.Empty;
     }
 }

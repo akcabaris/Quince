@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using ApplicationLLA.Server.Dtos.Worker;
 using ApplicationLLA.Server.Service;
 using ApplicationLLA.Server.Dtos.Review;
+using ApplicationLLA.Server.Helper;
 
 namespace ApplicationLLA.Server.Controllers
 {
@@ -69,12 +70,25 @@ namespace ApplicationLLA.Server.Controllers
 
             if (appUser == null) return BadRequest();
 
+            if (workerDto == null) { return BadRequest(); }
+
             var worker = await _workerRepo.GetByUserIdAsync(appUser.Id);
 
             if (worker == null) return BadRequest();
             workerDto.ToWorkerFromUpdate(worker.AppUserId.ToString());
 
-            if (workerDto == null) { return BadRequest(); }
+
+            // For now i just accept like the 5XXXXXXXXX phone numbers
+            if (!workerDto.PhoneNumber.IsPhoneNumberValidFormatTR())
+            {
+                return BadRequest();
+            }
+
+            workerDto.FullName = workerDto.FullName.HandleSpaces();
+            workerDto.Description = workerDto.Description.HandleSpaces();
+            workerDto.Occupation = workerDto.Occupation.HandleSpaces();
+
+
             var workerModel = await _workerRepo.UpdateAsync(worker.AppUserId, workerDto);
 
             if (workerModel == null) return BadRequest();

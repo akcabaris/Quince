@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helper\" />
 	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Folder Include="Uploads\" />
   </ItemGroup>

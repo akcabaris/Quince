@@ -226,6 +226,19 @@ namespace ApplicationLLA.Server.Controllers
             int postLimit = worker.postLimit;
             var checkLimit = await _postRepo.CheckLimit(worker.AppUserId.ToString(), postLimit);
 
+            postDto.Title = postDto.Title.HandleSpaces();
+            postDto.Description = postDto.Description.HandleSpaces();
+            postDto.PriceWorkUnit = postDto.PriceWorkUnit.HandleSpaces();
+            postDto.PriceCurrency = postDto.PriceCurrency.HandleSpaces();
+
+            if(!postDto.Category.IsCategoryExists(await _categoryRepository.GetCategoryNamesForCheck())
+                || !postDto.PriceCurrency.IsCurrencyValid(ArgumentLists.GetCurrencies())
+                || !postDto.PriceWorkUnit.IsWorkUnitValid(ArgumentLists.GetWorkUnits())
+                || !postDto.City.IsCityValidTR(ArgumentLists.GetCities()))
+                    {
+                        return BadRequest();
+                    }
+
             if (checkLimit)
             {
                 var postModel = postDto.ToPostFromCreate(worker.AppUserId);
